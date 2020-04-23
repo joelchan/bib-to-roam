@@ -27,7 +27,9 @@ for author in entry['author'].split(" and "):
     authors.append("%s %s" %(author[-1], author[0]))
 
 # get year
-year = entry['year'].replace("{", "").replace("}", "")
+year = "no_info"
+if 'year' in entry:
+    year = entry['year'].replace("{", "").replace("}", "")
 
 # get publication
 entry_type = entry['ENTRYTYPE']
@@ -38,11 +40,17 @@ et_keys = {
     'incollection': 'series'
 }
 publication = "no_info" # default value for other kinds of pubs
+source_type = ""
 if entry_type in et_keys:
     publication = entry[et_keys[entry_type]].replace("{", "").replace("}", "")
+    source_type = "#R-Paper"
+
+url = ""
+if 'url' in entry:
+    url = entry['url']
 
 # stitch everything together
-out_str = "- Metadata\n\t - Title: %s\n\t - Authored by:: %s\n\t - Year: %s\n\t - Publication: %s" %(title, " , ".join(authors), year, publication)
+out_str = "- Metadata::\n\t - Title: %s\n\t\t- Tags:: %s\n\t - Authored by:: %s\n\t - Year: %s\n\t - Publication: %s\n\tURL: %s\n\t" %(title, source_type, " , ".join(authors), year, publication, url)
 
 # append to the clipboard
 r.clipboard_clear()
