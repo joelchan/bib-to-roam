@@ -2,6 +2,7 @@ from tkinter import Tk
 import bibtexparser # dependency, need to pip install
 from bibtexparser.bparser import BibTexParser
 import pyperclip # dependency, need to pip install
+import getPDF_url as gpdf
 
 # get citation from clipboard
 # we assume it is in valid bibtex
@@ -16,6 +17,7 @@ clip_text = r.clipboard_get()
 parser = BibTexParser(common_strings=True)
 bib = bibtexparser.loads(clip_text, parser)
 entry = bib.entries[0]
+print(entry)
 
 # parse title
 title = entry['title'].replace("{", "").replace("}", "")
@@ -36,22 +38,38 @@ entry_type = entry['ENTRYTYPE']
 # key is different for journal articles vs. conference papers; usually I want the series
 et_keys = {
     'article': 'journal',
-    'inproceedings': 'series',
-    'incollection': 'series'
+    'inproceedings': 'booktitle',
+    'incollection': 'booktitle'
+}
+et_source_tags = {
+    'article': '#ref/Paper',
+    'book': '#ref/Book',
+    'incollection': '#ref/BookChapter',
+    'inproceedings': '#ref/Paper'
 }
 publication = "no_info" # default value for other kinds of pubs
-source_type = ""
 if entry_type in et_keys:
     publication = entry[et_keys[entry_type]].replace("{", "").replace("}", "")
-    source_type = "#R-Paper"
+source_tag = ""
+if entry_type in et_source_tags:
+    source_tag = et_source_tags[entry_type]
+else:
+    source_tag = "#ref/Other"
 
 url = ""
 if 'url' in entry:
     url = entry['url']
 
+# get pdf
+# filename = entry['file'].split(":")[0]
+# embed = gpdf.get_pdf_url(filename)
+embed = "Placeholder"
+
 # stitch everything together
-out_str = "- Metadata::\n\t - Title: %s\n\t\t- Tags:: %s\n\t - Authored by:: %s\n\t - Year: %s\n\t - Publication: %s\n\tURL: %s\n\t" %(title, source_type, " , ".join(authors), year, publication, url)
+out_str = "- #references:\n\t- Title: %s\n\t- Meta:\n\t\t- Tags: %s\n\t\t- Authored by:: %s\n\t\t- Year: [[%s]]\n\t\t- Publication: %s\n\t\t- URL: %s\n\t\t- Citekey: %s\n\t- Content\n\t\t- %s" %(title, source_tag, " , ".join(authors), year, publication, url, entry['ID'], embed)
 
 # append to the clipboard
 r.clipboard_clear()
 pyperclip.copy(out_str)
+
+
