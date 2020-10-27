@@ -2,7 +2,7 @@ from tkinter import Tk
 import bibtexparser # dependency, need to pip install
 from bibtexparser.bparser import BibTexParser
 import pyperclip # dependency, need to pip install
-# import getPDF_url as gpdf
+import getPDF_url as gpdf
 
 # get citation from clipboard
 # we assume it is in valid bibtex
@@ -20,13 +20,13 @@ entry = bib.entries[0]
 print(entry)
 
 # parse title
-title = entry['title'].replace("{", "").replace("}", "").replace("\n", " ")
+title = entry['title'].replace("{", "").replace("}", "")
 
 # build author string
 authors = []
 for author in entry['author'].split(" and "):
-    author = author.strip().replace("\n", " ").split(",")
-    authors.append("[[%s %s]]" %(author[-1].strip(), author[0].strip()))
+    author = author.strip().split(",")
+    authors.append("%s %s" %(author[-1], author[0]))
 
 # get year
 year = "no_info"
@@ -68,7 +68,6 @@ embed = "Placeholder"
 abstract = ""
 if "abstract" in entry:
     abstract = entry['abstract']
-    abstract = abstract.replace("\n", " ")
 
 # stitch everything together
 out_str = "- #references\n\t- Title: %s\n\t- Meta:\n\t\t- Tags: %s\n\t\t- Authored by:: %s\n\t\t- Year: [[%s]]\n\t\t- Publication: %s\n\t\t- URL: %s\n\t\t- Citekey: %s\n\t- Content\n\t\t- %s\n\t\t- Abstract\n\t\t\t- %s" %(title, source_tag, " , ".join(authors), year, publication, url, entry['ID'], embed, abstract)
