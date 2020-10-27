@@ -49,19 +49,28 @@
         Zotero.write('\t\t\tYear: ')
         Zotero.write('[[' + dateS + ']]\n')
         
-    
-    
-        // Zotero.write('  title:: ')
-        // Zotero.write('[[' + titleS + ']]\n')
+        // publication
+        Zotero.write('\t\t\tPublication: ')
+        Zotero.write(item.publicationTitle + '\n')
      
-        
-     
+        // zotero link
         var library_id = item.libraryID ? item.libraryID : 0;  
         var itemLink = 'zotero://select/items/' + library_id + '_' + item.key;
      
         Zotero.write('\t\t\t- Zotero link: ')
         Zotero.write('[Zotero Link](' + itemLink + ')\n')
      
+        // url with citation
+        Zotero.write('\t\t\t- URL: [')
+        Zotero.write(creatorsS)
+        Zotero.write(' (' + dateS + '). ')
+        Zotero.write(titleS + '. ')
+        Zotero.write(item.publicationTitle + '](' + item.url + ')\n')
+        
+        // abstract
+        Zotero.write('\t\t- Content\n')
+        Zotero.write('\t\t\t- Abstract\n')
+        Zotero.write('\t\t\t\t- ' + item.abstractNote + '\n')
       }
     }
     
